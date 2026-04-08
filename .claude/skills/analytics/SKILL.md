@@ -2,13 +2,15 @@
 name: analytics
 description: Parse a Luma CSV export and display attendee role breakdowns, topic interests, and key insights
 disable-model-invocation: true
-allowed-tools: Bash(bun run *) Glob Read AskUserQuestion
+allowed-tools: Bash(bun *) Bash(cd *) Glob Read AskUserQuestion
 argument-hint: <path-to-csv>
 ---
 
 # Attendee Analytics
 
 Analyse a Luma event CSV export and display a rich terminal dashboard with role breakdowns, topic interests, experience levels, and key insight metrics.
+
+This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKILL_DIR}`.
 
 ## Workflow
 
@@ -22,12 +24,12 @@ Analyse a Luma event CSV export and display a rich terminal dashboard with role 
 
 3. **Ensure dependencies are installed:**
    ```bash
-   cd cli && bun install --frozen-lockfile 2>/dev/null || bun install
+   cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
    ```
 
-4. **Run the analytics tool** from the project root:
+4. **Run the analytics tool:**
    ```bash
-   bun run cli/analytics.ts <path-to-csv>
+   bun run ${CLAUDE_SKILL_DIR}/analytics.ts <path-to-csv>
    ```
 
 5. **Summarise the results.** After displaying the dashboard output, provide a brief natural-language summary highlighting:

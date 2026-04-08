@@ -2,13 +2,15 @@
 name: invite-planner
 description: Cross-reference past Luma event CSVs with a current event to bucket and AI-rank candidates for invite lists
 disable-model-invocation: true
-allowed-tools: Bash(bun run *) Glob Read Write AskUserQuestion
+allowed-tools: Bash(bun *) Bash(cd *) Glob Read Write AskUserQuestion
 argument-hint: --past <csv...> --current <csv>
 ---
 
 # Invite Planner
 
 Cross-reference past Luma event CSVs with a current event's guest list to identify new vs. returning candidates, then AI-rank them by fit for your target audience.
+
+This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKILL_DIR}`.
 
 ## Workflow
 
@@ -31,17 +33,15 @@ If arguments are missing or incomplete:
 
 ### Step 2: Run the cross-reference script
 
-Ensure dependencies are installed, then run the planner CLI to bucket candidates:
+Ensure dependencies are installed, then run the planner script to bucket candidates:
 
 ```bash
-cd cli && bun install --frozen-lockfile 2>/dev/null || bun install
+cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
 ```
 
 ```bash
-bun run cli/planner.ts --past <past-files...> --current <current-file>
+bun run ${CLAUDE_SKILL_DIR}/planner.ts --past <past-files...> --current <current-file>
 ```
-
-**Do NOT pass `--query` flag.** We will handle AI evaluation natively in the next steps.
 
 Present the cross-reference output to the user — it shows the summary stats and candidate buckets (New, Never Selected, Previously Invited).
 
@@ -84,8 +84,8 @@ Display the evaluation results as a **markdown table** sorted by fitScore descen
 
 | Score | Rec | Name | Role | Company | Reasoning |
 |-------|-----|------|------|---------|-----------|
-| 9 | ✓ | Alice Chen | Software Engineer | Acme Corp | Strong technical background with daily Claude usage... |
-| 7 | ✓ | Bob Smith | Founder / CEO | StartupX | Founder actively exploring AI for business... |
+| 9 | yes | Alice Chen | Software Engineer | Acme Corp | Strong technical background with daily Claude usage... |
+| 7 | yes | Bob Smith | Founder / CEO | StartupX | Founder actively exploring AI for business... |
 | 4 |   | Carol Davis | Product Manager | BigCo | Some interest but role doesn't align closely... |
 
 Include a summary line: **"X recommended of Y evaluated"**
@@ -103,7 +103,7 @@ Use proper CSV escaping (double-quote fields containing commas or quotes).
 
 ## Notes
 
-- The cross-reference step (Step 2) uses the CLI tool for reliable bucketing logic.
+- The cross-reference step (Step 2) uses the embedded script for reliable bucketing logic.
 - The AI evaluation (Step 5) is done natively by Claude — no subprocess or API key needed.
 - Candidate emails are never included in output or exports (privacy).
 - Only candidates with status `waitlist`, `declined`, or `pending_approval` are evaluated.
