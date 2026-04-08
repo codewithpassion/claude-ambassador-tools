@@ -2,7 +2,7 @@
 name: analytics
 description: Parse a Luma CSV export and display attendee role breakdowns, topic interests, and key insights
 disable-model-invocation: true
-allowed-tools: Bash(bun *) Bash(cd *) Glob Read AskUserQuestion
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/*) Glob Read AskUserQuestion
 argument-hint: <path-to-csv>
 ---
 
@@ -10,7 +10,7 @@ argument-hint: <path-to-csv>
 
 Analyse a Luma event CSV export and display a rich terminal dashboard with role breakdowns, topic interests, experience levels, and key insight metrics.
 
-This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKILL_DIR}`.
+This skill is fully self-contained — the bundled script in `dist/` has zero runtime dependencies beyond node or bun.
 
 ## Workflow
 
@@ -22,18 +22,14 @@ This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKI
 
 2. **Verify the file exists.** Use Read to check the first few lines of the CSV file to confirm it looks like a Luma export (should have columns like `name`, `email`, `approval_status`). If it doesn't look right, warn the user.
 
-3. **Ensure dependencies are installed** (this is a separate step — do NOT stay in this directory):
+3. **Run the analytics tool** from the user's working directory:
    ```bash
-   cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
+   ${CLAUDE_SKILL_DIR}/run <path-to-csv>
    ```
 
-4. **Run the analytics tool from the user's working directory** (NOT from the skill directory) so CSV paths resolve correctly:
-   ```bash
-   bun run ${CLAUDE_SKILL_DIR}/analytics.ts <path-to-csv>
-   ```
-   IMPORTANT: Do not `cd` into the skill directory before running this.
+   The `run` wrapper automatically picks bun or node — whichever is available.
 
-5. **Summarise the results.** After displaying the dashboard output, provide a brief natural-language summary highlighting:
+4. **Summarise the results.** After displaying the dashboard output, provide a brief natural-language summary highlighting:
    - The total number of registrants
    - The dominant role category and what that means for content planning
    - The top 2-3 requested topics
@@ -52,3 +48,10 @@ This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKI
 - The tool filters for active registrants (approved, waitlist, attended status).
 - Role categorisation uses keyword matching to bucket attendees into 8 categories.
 - Topic detection covers 12 categories: Skills & Plugins, Agentic Workflows, Multi-Agent Teams, Automation, Sub-Agents, Cowork, MCP, Code Quality, Vibe Coding, Context Management, Research & Writing, Non-SWE Usage.
+
+## Developer Notes
+
+To rebuild after editing source in `src/`:
+```bash
+cd ${CLAUDE_SKILL_DIR} && bun install && bun run build
+```

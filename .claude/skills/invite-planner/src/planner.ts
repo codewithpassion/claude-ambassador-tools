@@ -1,7 +1,8 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 // Attendance Planner — self-contained script for the /invite-planner skill
 // Handles cross-referencing and display only. AI evaluation is done natively by Claude in the skill.
 
+import { readFileSync, existsSync } from "node:fs"
 import chalk from "chalk"
 import {
   parseLumaCSV,
@@ -63,22 +64,20 @@ if (pastPaths.length === 0 || !currentPath) {
 
 // ─── Load CSVs ───────────────────────────────────────────────────────────────
 
-async function loadCSV(path: string): Promise<UploadedFile> {
-  const file = Bun.file(path)
-  const exists = await file.exists()
-  if (!exists) {
+function loadCSV(path: string): UploadedFile {
+  if (!existsSync(path)) {
     console.error(chalk.hex("#F87171")(`Error: File not found: ${path}`))
     process.exit(1)
   }
-  const text = await file.text()
+  const text = readFileSync(path, "utf-8")
   const rows = parseLumaCSV(text)
   const name = path.split("/").pop() || path
   return { name, rows }
 }
 
 try {
-  const pastFiles = await Promise.all(pastPaths.map(loadCSV))
-  const currentFile = await loadCSV(currentPath)
+  const pastFiles = pastPaths.map(loadCSV)
+  const currentFile = loadCSV(currentPath)
 
   console.log("")
   console.log(chalk.bold.hex("#E8E6DF")("  Attendance Planner"))

@@ -1,6 +1,7 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 // Attendee Analytics — self-contained script for the /analytics skill
 
+import { readFileSync, existsSync } from "node:fs"
 import chalk from "chalk"
 import { parseLumaCSV, analyseRows } from "./lib/shared"
 import { renderAnalyticsDashboard } from "./lib/display"
@@ -23,14 +24,12 @@ if (!csvPath) {
 }
 
 try {
-  const file = Bun.file(csvPath)
-  const exists = await file.exists()
-  if (!exists) {
+  if (!existsSync(csvPath)) {
     console.error(chalk.hex("#F87171")(`Error: File not found: ${csvPath}`))
     process.exit(1)
   }
 
-  const text = await file.text()
+  const text = readFileSync(csvPath, "utf-8")
   const rows = parseLumaCSV(text)
 
   if (rows.length === 0) {

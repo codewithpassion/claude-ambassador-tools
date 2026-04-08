@@ -1,0 +1,19 @@
+#!/bin/sh
+# Wrapper script for the Invite Planner skill.
+# Runs the bundled JS with bun (preferred) or node (fallback).
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+JS_FILE="$SCRIPT_DIR/dist/planner.js"
+
+if [ ! -f "$JS_FILE" ]; then
+  echo "Error: $JS_FILE not found. Run 'bun run build' in $SCRIPT_DIR first." >&2
+  exit 1
+fi
+
+if command -v bun >/dev/null 2>&1; then
+  exec bun "$JS_FILE" "$@"
+elif command -v node >/dev/null 2>&1; then
+  exec node "$JS_FILE" "$@"
+else
+  echo "Error: Neither bun nor node found in PATH." >&2
+  exit 1
+fi

@@ -2,7 +2,7 @@
 name: invite-planner
 description: Cross-reference past Luma event CSVs with a current event to bucket and AI-rank candidates for invite lists
 disable-model-invocation: true
-allowed-tools: Bash(bun *) Bash(cd *) Glob Read Write AskUserQuestion
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/*) Glob Read Write AskUserQuestion
 argument-hint: --past <csv...> --current <csv>
 ---
 
@@ -10,7 +10,7 @@ argument-hint: --past <csv...> --current <csv>
 
 Cross-reference past Luma event CSVs with a current event's guest list to identify new vs. returning candidates, then AI-rank them by fit for your target audience.
 
-This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKILL_DIR}`.
+This skill is fully self-contained — the bundled script in `dist/` has zero runtime dependencies beyond node or bun.
 
 ## Workflow
 
@@ -33,19 +33,13 @@ If arguments are missing or incomplete:
 
 ### Step 2: Run the cross-reference script
 
-Ensure dependencies are installed (this is a separate step — do NOT stay in this directory):
+Run the planner script from the user's working directory to bucket candidates:
 
 ```bash
-cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
+${CLAUDE_SKILL_DIR}/run --past <past-files...> --current <current-file>
 ```
 
-Then run the planner script **from the user's working directory** (NOT from the skill directory) so CSV paths and any export files resolve correctly:
-
-```bash
-bun run ${CLAUDE_SKILL_DIR}/planner.ts --past <past-files...> --current <current-file>
-```
-
-IMPORTANT: Do not `cd` into the skill directory before running this. Output files must be created relative to the user's current working directory.
+The `run` wrapper automatically picks bun or node — whichever is available.
 
 Present the cross-reference output to the user — it shows the summary stats and candidate buckets (New, Never Selected, Previously Invited).
 
@@ -107,7 +101,14 @@ Use proper CSV escaping (double-quote fields containing commas or quotes).
 
 ## Notes
 
-- The cross-reference step (Step 2) uses the embedded script for reliable bucketing logic.
+- The cross-reference step (Step 2) uses the bundled script for reliable bucketing logic.
 - The AI evaluation (Step 5) is done natively by Claude — no subprocess or API key needed.
 - Candidate emails are never included in output or exports (privacy).
 - Only candidates with status `waitlist`, `declined`, or `pending_approval` are evaluated.
+
+## Developer Notes
+
+To rebuild after editing source in `src/`:
+```bash
+cd ${CLAUDE_SKILL_DIR} && bun install && bun run build
+```

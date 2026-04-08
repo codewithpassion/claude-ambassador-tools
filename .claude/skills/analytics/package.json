@@ -1,6 +1,9 @@
 {
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "bun build src/analytics.ts --outfile dist/analytics.js --target node --bundle"
+  },
   "dependencies": {
     "chalk": "^5.4.1",
     "cli-table3": "^0.6.5"
