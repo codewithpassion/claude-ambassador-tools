@@ -33,15 +33,19 @@ If arguments are missing or incomplete:
 
 ### Step 2: Run the cross-reference script
 
-Ensure dependencies are installed, then run the planner script to bucket candidates:
+Ensure dependencies are installed (this is a separate step — do NOT stay in this directory):
 
 ```bash
 cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
 ```
 
+Then run the planner script **from the user's working directory** (NOT from the skill directory) so CSV paths and any export files resolve correctly:
+
 ```bash
 bun run ${CLAUDE_SKILL_DIR}/planner.ts --past <past-files...> --current <current-file>
 ```
+
+IMPORTANT: Do not `cd` into the skill directory before running this. Output files must be created relative to the user's current working directory.
 
 Present the cross-reference output to the user — it shows the summary stats and candidate buckets (New, Never Selected, Previously Invited).
 

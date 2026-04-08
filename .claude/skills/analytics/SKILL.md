@@ -22,15 +22,16 @@ This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKI
 
 2. **Verify the file exists.** Use Read to check the first few lines of the CSV file to confirm it looks like a Luma export (should have columns like `name`, `email`, `approval_status`). If it doesn't look right, warn the user.
 
-3. **Ensure dependencies are installed:**
+3. **Ensure dependencies are installed** (this is a separate step — do NOT stay in this directory):
    ```bash
    cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
    ```
 
-4. **Run the analytics tool:**
+4. **Run the analytics tool from the user's working directory** (NOT from the skill directory) so CSV paths resolve correctly:
    ```bash
    bun run ${CLAUDE_SKILL_DIR}/analytics.ts <path-to-csv>
    ```
+   IMPORTANT: Do not `cd` into the skill directory before running this.
 
 5. **Summarise the results.** After displaying the dashboard output, provide a brief natural-language summary highlighting:
    - The total number of registrants

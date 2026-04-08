@@ -17,15 +17,16 @@ This skill is fully self-contained — all scripts are embedded in `${CLAUDE_SKI
 1. **Get the input text.** If `$ARGUMENTS` is provided, use it directly. If `$ARGUMENTS` is empty or missing, use AskUserQuestion to ask:
    > What URL or text would you like to encode as a QR code?
 
-2. **Ensure dependencies are installed.** Run install in the skill directory:
+2. **Ensure dependencies are installed.** Run install in the skill directory (this is a separate step — do NOT stay in this directory):
    ```bash
    cd ${CLAUDE_SKILL_DIR} && bun install --frozen-lockfile 2>/dev/null || bun install
    ```
 
-3. **Generate the QR code.** Run the embedded script:
+3. **Generate the QR code.** Run the embedded script **from the user's working directory** (NOT from the skill directory) so that any output files are saved where the user expects:
    ```bash
    bun run ${CLAUDE_SKILL_DIR}/qr.ts <text-or-url> [flags]
    ```
+   IMPORTANT: Do not `cd` into the skill directory before running this. Output files (e.g. `--output event-qr.png`) must be created relative to the user's current working directory.
    Pass through any flags the user included (e.g. `--output event-qr.png`, `--small`).
 
 4. **Report the result:**
