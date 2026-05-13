@@ -41,7 +41,7 @@ function App() {
               <span className="text-white text-[11px] font-bold">C</span>
             </div>
             <span className="text-sm font-semibold tracking-tight hidden sm:inline text-[#E8E6DF]">
-              Claude Community Tools
+              Claude Community Ambassador Tools
             </span>
           </button>
           <div className="flex items-center gap-1">

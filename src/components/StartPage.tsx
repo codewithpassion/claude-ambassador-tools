@@ -394,7 +394,7 @@ export default function StartPage({ onSelect }: StartPageProps) {
             <span className="text-white text-sm font-bold">C</span>
           </div>
           <h1 className="text-xl font-semibold tracking-tight text-[#E8E6DF]">
-            Claude Community Tools
+            Claude Community Ambassador Tools
           </h1>
         </div>
         <p className="text-sm text-[#6A6860]">
