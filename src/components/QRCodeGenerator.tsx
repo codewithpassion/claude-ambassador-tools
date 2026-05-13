@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react"
+import { useSearchParams } from "react-router-dom"
 import QRCode from "qrcode"
 
 export default function QRCodeGenerator() {
-  const [inputText, setInputText] = useState("https://claude.ai")
+  const [searchParams] = useSearchParams()
+  const [inputText, setInputText] = useState(searchParams.get("url") ?? "https://claude.ai")
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [hasQR, setHasQR] = useState(false)
   const [copied, setCopied] = useState(false)
