@@ -1,4 +1,4 @@
-import { BarChart3, Users, QrCode } from "lucide-react"
+import { BarChart3, Users, QrCode, MonitorPlay } from "lucide-react"
 
 type Tool = "analytics" | "planner" | "qr"
 
@@ -323,6 +323,52 @@ function QRPreview() {
   )
 }
 
+function ScreensaverPreview() {
+  const slides = ["Claude Community AU", "Powered by Claude", "claude.ai"]
+  return (
+    <div className="relative w-full h-full bg-[#0A0A09] flex flex-col items-center justify-center gap-3 overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#7C6FCD]/10 via-transparent to-[#C0496D]/10 pointer-events-none" />
+      {/* Logo */}
+      <div className="w-10 h-10 rounded-xl bg-[#7C6FCD]/20 border border-[#7C6FCD]/30 flex items-center justify-center">
+        <span className="text-[#C8C0FF] text-base font-bold">C</span>
+      </div>
+      {/* Slide text */}
+      <div className="flex flex-col items-center gap-1">
+        {slides.map((s, i) => (
+          <div
+            key={s}
+            className="text-center font-semibold tracking-tight"
+            style={{
+              fontSize: i === 0 ? 9 : 7,
+              color: i === 0 ? "#E8E6DF" : "#5A5855",
+            }}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
+      {/* Progress dots */}
+      <div className="flex gap-1 mt-1">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-1 rounded-full"
+            style={{
+              width: i === 0 ? 12 : 4,
+              background: i === 0 ? "#7C6FCD" : "rgba(255,255,255,0.12)",
+            }}
+          />
+        ))}
+      </div>
+      {/* Corner label */}
+      <div className="absolute bottom-2 right-2 text-[5px] text-[#3A3835] font-mono">
+        screen.claudeambassadortools.com
+      </div>
+    </div>
+  )
+}
+
 // ─── Card component ───────────────────────────────────────────────────────────
 
 function ToolCard({
@@ -331,23 +377,22 @@ function ToolCard({
   icon: Icon,
   preview,
   onClick,
+  href,
 }: {
   title: string
   description: string
   icon: typeof BarChart3
   preview: React.ReactNode
-  onClick: () => void
+  onClick?: () => void
+  href?: string
 }) {
-  return (
-    <button
-      onClick={onClick}
-      className="group text-left bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden hover:border-[#7C6FCD]/30 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer flex flex-col"
-    >
-      {/* Preview area */}
+  const cls =
+    "group text-left bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden hover:border-[#7C6FCD]/30 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer flex flex-col"
+  const inner = (
+    <>
       <div className="bg-[#111110] border-b border-white/[0.06] overflow-hidden h-[200px]">
         {preview}
       </div>
-      {/* Info */}
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-center gap-2 mb-1.5">
           <Icon className="w-4 h-4 text-[#7C6FCD] group-hover:text-[#9B8FE6] transition-colors" />
@@ -355,10 +400,21 @@ function ToolCard({
             {title}
           </h3>
         </div>
-        <p className="text-xs text-[#6A6860] leading-relaxed">
-          {description}
-        </p>
+        <p className="text-xs text-[#6A6860] leading-relaxed">{description}</p>
       </div>
+    </>
+  )
+
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+        {inner}
+      </a>
+    )
+  }
+  return (
+    <button onClick={onClick} className={cls}>
+      {inner}
     </button>
   )
 }
@@ -382,7 +438,7 @@ export default function StartPage({ onSelect }: StartPageProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 max-w-6xl w-full">
         <ToolCard
           title="Attendee Analytics"
           description="Upload a Luma CSV to see role breakdowns, topic interest, and key insights. Copy the dashboard as an image."
@@ -403,6 +459,13 @@ export default function StartPage({ onSelect }: StartPageProps) {
           icon={QrCode}
           preview={<QRPreview />}
           onClick={() => onSelect("qr")}
+        />
+        <ToolCard
+          title="Event Screensaver"
+          description="A fullscreen animated screensaver for Claude Community events. Runs in the browser, no install needed."
+          icon={MonitorPlay}
+          preview={<ScreensaverPreview />}
+          href="https://screen.claudeambassadortools.com"
         />
       </div>
     </div>
