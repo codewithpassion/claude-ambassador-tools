@@ -324,48 +324,12 @@ function QRPreview() {
 }
 
 function ScreensaverPreview() {
-  const slides = ["Claude Community AU", "Powered by Claude", "claude.ai"]
   return (
-    <div className="relative w-full h-full bg-[#0A0A09] flex flex-col items-center justify-center gap-3 overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#7C6FCD]/10 via-transparent to-[#C0496D]/10 pointer-events-none" />
-      {/* Logo */}
-      <div className="w-10 h-10 rounded-xl bg-[#7C6FCD]/20 border border-[#7C6FCD]/30 flex items-center justify-center">
-        <span className="text-[#C8C0FF] text-base font-bold">C</span>
-      </div>
-      {/* Slide text */}
-      <div className="flex flex-col items-center gap-1">
-        {slides.map((s, i) => (
-          <div
-            key={s}
-            className="text-center font-semibold tracking-tight"
-            style={{
-              fontSize: i === 0 ? 9 : 7,
-              color: i === 0 ? "#E8E6DF" : "#5A5855",
-            }}
-          >
-            {s}
-          </div>
-        ))}
-      </div>
-      {/* Progress dots */}
-      <div className="flex gap-1 mt-1">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="h-1 rounded-full"
-            style={{
-              width: i === 0 ? 12 : 4,
-              background: i === 0 ? "#7C6FCD" : "rgba(255,255,255,0.12)",
-            }}
-          />
-        ))}
-      </div>
-      {/* Corner label */}
-      <div className="absolute bottom-2 right-2 text-[5px] text-[#3A3835] font-mono">
-        screen.claudeambassadortools.com
-      </div>
-    </div>
+    <img
+      src="/screen.png"
+      alt="Event Screensaver preview"
+      className="w-full h-full object-cover object-top"
+    />
   )
 }
 
