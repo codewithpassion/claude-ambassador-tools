@@ -1,0 +1,16 @@
+{
+  "name": "claude-ambassador-tools",
+  "compatibility_date": "2026-05-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    {
+      "pattern": "claudeambassadortools.com",
+      "custom_domain": true
+    }
+  ]
+}

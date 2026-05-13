@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate, useLocation, Routes, Route, Navigate } from "react-router-dom"
 import { BarChart3, Users, QrCode, Settings, Home } from "lucide-react"
 import AttendeeAnalytics from "@/components/AttendeeAnalytics"
 import AttendancePlanner from "@/components/AttendancePlanner"
@@ -8,16 +9,19 @@ import StartPage from "@/components/StartPage"
 
 type Tool = "home" | "analytics" | "planner" | "qr"
 
-const NAV_ITEMS: { key: Tool; label: string; icon: typeof BarChart3 }[] = [
-  { key: "home", label: "Home", icon: Home },
-  { key: "analytics", label: "Analytics", icon: BarChart3 },
-  { key: "planner", label: "Attendance Planner", icon: Users },
-  { key: "qr", label: "QR Generator", icon: QrCode },
+const NAV_ITEMS: { key: Tool; label: string; icon: typeof BarChart3; path: string }[] = [
+  { key: "home", label: "Home", icon: Home, path: "/" },
+  { key: "analytics", label: "Analytics", icon: BarChart3, path: "/analytics" },
+  { key: "planner", label: "Attendance Planner", icon: Users, path: "/planner" },
+  { key: "qr", label: "QR Generator", icon: QrCode, path: "/qr" },
 ]
 
 function App() {
-  const [activeTool, setActiveTool] = useState<Tool>("home")
   const [showSettings, setShowSettings] = useState(false)
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+
+  const activeTool = NAV_ITEMS.find(item => item.path === pathname)?.key ?? "home"
 
   // Force dark mode
   useEffect(() => {
@@ -30,7 +34,7 @@ function App() {
       <header className="border-b border-white/[0.06] bg-[#0C0C0B]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <button
-            onClick={() => setActiveTool("home")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-2.5 cursor-pointer bg-transparent border-none"
           >
             <div className="w-6 h-6 rounded-md bg-[#7C6FCD] flex items-center justify-center">
@@ -42,10 +46,10 @@ function App() {
           </button>
           <div className="flex items-center gap-1">
             <nav className="flex items-center gap-1">
-              {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
+              {NAV_ITEMS.map(({ key, label, icon: Icon, path }) => (
                 <button
                   key={key}
-                  onClick={() => setActiveTool(key)}
+                  onClick={() => navigate(path)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     activeTool === key
                       ? "bg-[#7C6FCD]/15 text-[#C8C0FF] border border-[#7C6FCD]/25"
@@ -70,10 +74,13 @@ function App() {
 
       {/* Content */}
       <main className={activeTool === "home" ? "" : "max-w-7xl mx-auto px-4 sm:px-6 py-8"}>
-        {activeTool === "home" && <StartPage onSelect={setActiveTool} />}
-        {activeTool === "analytics" && <AttendeeAnalytics />}
-        {activeTool === "planner" && <AttendancePlanner />}
-        {activeTool === "qr" && <QRCodeGenerator />}
+        <Routes>
+          <Route path="/" element={<StartPage onSelect={(tool) => navigate(NAV_ITEMS.find(i => i.key === tool)!.path)} />} />
+          <Route path="/analytics" element={<AttendeeAnalytics />} />
+          <Route path="/planner" element={<AttendancePlanner />} />
+          <Route path="/qr" element={<QRCodeGenerator />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {/* Global AI Settings Modal */}
